@@ -3,7 +3,7 @@ package com.Index.payloads;
 import lombok.Data;
 
 @Data
-public class BankTransactionResponse {
+public class BankTransferResponse {
 
     private String amount;
     private String beneficiaryAccountNumber;

@@ -4,6 +4,7 @@ import com.Index.configs.ConfigProperties;
 import com.Index.exception.BadRequestException;
 import com.Index.payloads.*;
 import com.Index.providers.CoreBankingProvider;
+import com.Index.providers.ProviderManager;
 import com.Index.providers.flutterwave.FlutterWaveURIs;
 import com.Index.providers.flutterwave.dto.FLWAccountDetail;
 import com.Index.providers.flutterwave.dto.FLWNIPBank;
@@ -12,19 +13,26 @@ import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
+import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Slf4j
 @Service("FLUTTERWAVE")
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor = @__(@Lazy))
 public class FlutterWaveService implements CoreBankingProvider {
     private final HttpClient httpClient;
     private final ConfigProperties configProperties;
+    private final ProviderManager providerManager;
 
     @Override
     public Collection<NIPBank> nipBanks() {
+        Collection<NIPBank> nipBanks = providerManager.getProviderBanks("FLUTTERWAVE");
+
+        if (BooleanUtils.isFalse(nipBanks.isEmpty())) return nipBanks;
+
         final String url = configProperties.getFlutterWave().getBaseUrl().concat(FlutterWaveURIs.LIST_BANKS);
 
         try (Response response = httpClient.get(getHeader(), new HashMap<>(), url)) {
@@ -54,7 +62,10 @@ public class FlutterWaveService implements CoreBankingProvider {
 
             FLWAccountDetail accountDetail = httpClient.toPojo(httpClient.toJson(apiResponse.getData()), FLWAccountDetail.class);
 
-            return new AccountResponse(accountDetail);
+            AccountResponse accountResponse = new AccountResponse(accountDetail);
+            accountResponse.setAccountName(providerManager.getBankName(validateAccountRequestDto.getCode()));
+
+            return accountResponse;
 
         } catch (Exception e) {
             log.error("--> NIPBanks exception :: ", e);
@@ -63,7 +74,7 @@ public class FlutterWaveService implements CoreBankingProvider {
     }
 
 
-    public BankTransactionResponse bankTransaction(BankTransferRequest request){
+    public BankTransferResponse bankTransaction(BankTransferRequest request){
         //checks --> true
         //save Transaction
         return null;
