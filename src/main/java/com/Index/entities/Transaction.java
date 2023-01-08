@@ -24,4 +24,7 @@ public class Transaction {
     private String callBackUrl;
     private int maxRetryAttempt;
     private int retryAttempt;
+
+    private String status = "PENDING";
+    private String sessionId;
 }

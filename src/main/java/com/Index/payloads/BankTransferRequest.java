@@ -2,6 +2,7 @@ package com.Index.payloads;
 
 
 import com.Index.entities.Transaction;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 @Data
@@ -17,17 +18,21 @@ public class BankTransferRequest {
     private String callBackUrl;
     private int maxRetryAttempt;
 
-    public Transaction toEntity() {
-        Transaction t = new Transaction();
-        t.setAmount(amount);
-        t.setCurrencyCode(currencyCode);
-        t.setNarration(narration);
-        t.setBeneficiaryAccountNumber(beneficiaryAccountNumber);
-        t.setBeneficiaryAccountName(beneficiaryAccountName);
-        t.setBeneficiaryBankCode(beneficiaryBankCode);
-        t.setTransactionReference(transactionReference);
-        t.setCallBackUrl(callBackUrl);
-        t.setMaxRetryAttempt(maxRetryAttempt);
-        return t;
+
+    private String provider;
+
+    public Transaction toEntity(String provider) {
+        Transaction transaction = new Transaction();
+        transaction.setAmount(amount);
+        transaction.setCurrencyCode(currencyCode);
+        transaction.setNarration(narration);
+        transaction.setBeneficiaryAccountNumber(beneficiaryAccountNumber);
+        transaction.setBeneficiaryAccountName(beneficiaryAccountName);
+        transaction.setBeneficiaryBankCode(beneficiaryBankCode);
+        transaction.setTransactionReference(transactionReference);
+        transaction.setCallBackUrl(callBackUrl);
+        transaction.setMaxRetryAttempt(maxRetryAttempt);
+        transaction.setProvider(provider);
+        return transaction;
     }
 }

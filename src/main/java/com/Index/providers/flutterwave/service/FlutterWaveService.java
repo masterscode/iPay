@@ -1,6 +1,7 @@
 package com.Index.providers.flutterwave.service;
 
 import com.Index.configs.ConfigProperties;
+import com.Index.entities.Transaction;
 import com.Index.exception.BadRequestException;
 import com.Index.payloads.*;
 import com.Index.providers.CoreBankingProvider;
@@ -8,7 +9,11 @@ import com.Index.providers.ProviderManager;
 import com.Index.providers.flutterwave.FlutterWaveURIs;
 import com.Index.providers.flutterwave.dto.FLWAccountDetail;
 import com.Index.providers.flutterwave.dto.FLWNIPBank;
+import com.Index.providers.flutterwave.dto.FLWTransferRequest;
+import com.Index.providers.flutterwave.dto.FLWTransferResponse;
 import com.Index.service.http.HttpClient;
+import com.Index.service.queue.QueueService;
+import com.Index.service.transaction.TransactionService;
 import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +31,10 @@ public class FlutterWaveService implements CoreBankingProvider {
     private final HttpClient httpClient;
     private final ConfigProperties configProperties;
     private final ProviderManager providerManager;
+
+    private final TransactionService transactionService;
+
+    private final QueueService queueService;
 
     @Override
     public Collection<NIPBank> nipBanks() {
@@ -74,10 +83,36 @@ public class FlutterWaveService implements CoreBankingProvider {
     }
 
 
-    public BankTransferResponse bankTransaction(BankTransferRequest request){
-        //checks --> true
-        //save Transaction
-        return null;
+    @Override
+    public BankTransferResponse initTransaction(BankTransferRequest request) {
+        if (transactionService.transactionExists(request.getTransactionReference()))
+            throw new BadRequestException("Duplicate transaction request");
+
+        Transaction transaction = transactionService.saveTransaction(request.toEntity("FLUTTERWAVE"));
+        request.setProvider(transaction.getProvider());
+        queueService.enqueueTransaction(request);
+        return new BankTransferResponse(transaction);
+    }
+
+    @Override
+    public BankTransferResponse processTransaction(BankTransferRequest request) {
+        final String transferRequest = httpClient.toJson(new FLWTransferRequest(request));
+        final String url = configProperties.getFlutterWave().getBaseUrl().concat(FlutterWaveURIs.FUNDS_TRANSFER);
+
+        try (Response response = httpClient.post(getHeader(), transferRequest, url)) {
+            final String responseString = response.body().string();
+
+            ApiResponse apiResponse = httpClient.toPojo(responseString, ApiResponse.class);
+            if( apiResponse.getData() == null)
+                return new BankTransferResponse(apiResponse);
+
+            FLWTransferResponse flwTransferResponse = httpClient.toPojo(
+                    httpClient.toJson(apiResponse.getData()), FLWTransferResponse.class);
+            return new BankTransferResponse(flwTransferResponse);
+        } catch (Exception e) {
+            log.error("Flutter wave bank transfer error {}", e);
+        }
+        return new BankTransferResponse();
     }
 
     private Map<String, String> getHeader() {

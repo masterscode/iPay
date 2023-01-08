@@ -2,10 +2,7 @@ package com.Index.providers.paystack.service;
 
 import com.Index.configs.ConfigProperties;
 import com.Index.exception.BadRequestException;
-import com.Index.payloads.AccountResponse;
-import com.Index.payloads.ApiResponse;
-import com.Index.payloads.NIPBank;
-import com.Index.payloads.ValidateAccountRequestDto;
+import com.Index.payloads.*;
 import com.Index.providers.CoreBankingProvider;
 import com.Index.providers.ProviderManager;
 import com.Index.providers.paystack.PayStackURIs;
@@ -79,6 +76,16 @@ public class PayStackService implements CoreBankingProvider {
             log.error("pay-stack error {}", e);
             throw new BadRequestException(e.getMessage());
         }
+    }
+
+    @Override
+    public Object initTransaction(BankTransferRequest request) {
+        return null;
+    }
+
+    @Override
+    public BankTransferResponse processTransaction(BankTransferRequest request) {
+        return null;
     }
 
     private Map<String, String> getHeader() {

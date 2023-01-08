@@ -15,4 +15,12 @@ public class FLWTransferResponse {
     String currency;
     String complete_message;
     String status;
+    String id;
+    String debit_currency;
+    String fee;
+    String meta;
+    String narration;
+    String requires_approval;
+    Integer is_approved;
+    String bank_name;
 }

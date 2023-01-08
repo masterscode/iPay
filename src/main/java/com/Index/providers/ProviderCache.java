@@ -19,7 +19,7 @@ public class ProviderCache {
         MutableConfiguration<String, NIPBank> configuration = new MutableConfiguration<String, NIPBank>()
                 .setTypes(String.class, NIPBank.class)
                 .setStoreByValue(false)
-                .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(new Duration(TimeUnit.DAYS, 7)));
+                .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(new Duration(TimeUnit.DAYS, 14)));
 
 
         return Caching.getCachingProvider()
