@@ -1,6 +1,7 @@
 package com.Index.configs.async;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 
 import java.lang.reflect.Method;
@@ -10,7 +11,8 @@ import java.util.Arrays;
 @Slf4j
 public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
         @Override
-        public void handleUncaughtException(Throwable throwable, Method method, Object... objects) {
+        public void
+        handleUncaughtException(@NotNull Throwable throwable, @NotNull Method method, @NotNull Object... objects) {
                 log.info("== This exception occurred in an async method ==");
 
                 log.error("Async Exception :", throwable);

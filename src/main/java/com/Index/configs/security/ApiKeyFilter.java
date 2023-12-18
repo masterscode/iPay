@@ -3,6 +3,7 @@ package com.Index.configs.security;
 import com.google.gson.Gson;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,24 +22,22 @@ public class ApiKeyFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+
         final String authHeader = request.getHeader("Authorization");
 
 
-        if (StringUtils.isBlank(authHeader)) {
+        if (StringUtils.isNotBlank(authHeader)) filterChain.doFilter(servletRequest, servletResponse);
 
+        else try (PrintWriter printWriter = response.getWriter()) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             servletResponse.setContentType("application/json");
-            PrintWriter printWriter = servletResponse.getWriter();
-
             printWriter.println(
                     gson.toJson(Collections.singletonMap("error", "Unauthorized"))
             );
-
-            printWriter.close();
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
-        log.info("convert the object to this URL is ::" + request.getRequestURI());
-        log.info("done with request sending response URL is ::" + request.getRequestURI());
 
-
-        filterChain.doFilter(servletRequest, servletResponse);
     }
 }

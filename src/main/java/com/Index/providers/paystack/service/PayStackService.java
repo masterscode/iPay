@@ -1,6 +1,7 @@
 package com.Index.providers.paystack.service;
 
 import com.Index.configs.ConfigProperties;
+import com.Index.entities.Transaction;
 import com.Index.exception.BadRequestException;
 import com.Index.payloads.*;
 import com.Index.providers.CoreBankingProvider;
@@ -78,13 +79,9 @@ public class PayStackService implements CoreBankingProvider {
         }
     }
 
-    @Override
-    public Object initTransaction(BankTransferRequest request) {
-        return null;
-    }
 
     @Override
-    public BankTransferResponse processTransaction(BankTransferRequest request) {
+    public BankTransferResponse processTransaction(Transaction request) {
         return null;
     }
 

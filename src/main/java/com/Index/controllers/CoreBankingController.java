@@ -39,11 +39,7 @@ public class CoreBankingController {
         );
     }
 
-    @PostMapping("/bankTransfer")
-    public ResponseEntity<Object>
-    bankTransfer(@Valid @RequestBody BankTransferRequest request, @RequestParam(required = false, defaultValue = "FLUTTERWAVE") String provider) {
-        return ResponseEntity.ok(provider(provider).initTransaction(request));
-    }
+
 
     @GetMapping("/transaction/{transactionReference}")
     public ResponseEntity<?> transactionStatus(@PathVariable String transactionReference) {

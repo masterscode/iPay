@@ -1,6 +1,6 @@
 package com.Index.providers.flutterwave.dto;
 
-import com.Index.payloads.BankTransferRequest;
+import com.Index.entities.Transaction;
 import lombok.Data;
 
 @Data
@@ -15,7 +15,7 @@ public class FLWTransferRequest {
     private String debit_currency;
 
 
-    public FLWTransferRequest(BankTransferRequest request){
+    public FLWTransferRequest(Transaction request){
         account_bank = request.getBeneficiaryBankCode();
         account_number = request.getBeneficiaryAccountNumber();
         amount = Double.parseDouble(request.getAmount());

@@ -84,18 +84,7 @@ public class FlutterWaveService implements CoreBankingProvider {
 
 
     @Override
-    public BankTransferResponse initTransaction(BankTransferRequest request) {
-        if (transactionService.transactionExists(request.getTransactionReference()))
-            throw new BadRequestException("Duplicate transaction request");
-
-        Transaction transaction = transactionService.saveTransaction(request.toEntity("FLUTTERWAVE"));
-        request.setProvider(transaction.getProvider());
-        queueService.enqueueTransaction(request);
-        return new BankTransferResponse(transaction);
-    }
-
-    @Override
-    public BankTransferResponse processTransaction(BankTransferRequest request) {
+    public BankTransferResponse processTransaction(Transaction request) {
         final String transferRequest = httpClient.toJson(new FLWTransferRequest(request));
         final String url = configProperties.getFlutterWave().getBaseUrl().concat(FlutterWaveURIs.FUNDS_TRANSFER);
 
