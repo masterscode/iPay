@@ -1,6 +1,7 @@
 package com.Index.service.transaction;
 
 import com.Index.entities.Transaction;
+import com.Index.payloads.ApiResponse;
 import com.Index.payloads.BankTransferResponse;
 
 import java.util.Optional;
@@ -13,4 +14,6 @@ public interface TransactionService {
     Optional<Transaction> getTransaction(String ref);
 
     boolean transactionExists(String ref);
+
+    ApiResponse findTransaction(String ref);
 }

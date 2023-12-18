@@ -4,6 +4,7 @@ package com.Index.controllers;
 import com.Index.exception.BadRequestException;
 import com.Index.payloads.*;
 import com.Index.providers.CoreBankingProvider;
+import com.Index.service.transaction.TransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import java.util.Optional;
 @RequestMapping("/api/v1/core-banking")
 public class CoreBankingController {
     private final Map<String, CoreBankingProvider> coreBankingProvider;
+    private final TransactionService transactionService;
 
     @GetMapping("/banks")
     public ResponseEntity<Collection<NIPBank>> getBanks(@RequestParam(required = false, defaultValue = "FLUTTERWAVE") String provider) {
@@ -33,7 +35,6 @@ public class CoreBankingController {
     public ResponseEntity<AccountResponse> validateBankAccount(@Valid @RequestBody ValidateAccountRequestDto dto,
                                                                @RequestParam(required = false, defaultValue = "FlutterWave") String provider
     ) {
-       ;
         return ResponseEntity.ok(
                  provider(provider).nameEnquiry(dto)
         );
@@ -42,8 +43,8 @@ public class CoreBankingController {
 
 
     @GetMapping("/transaction/{transactionReference}")
-    public ResponseEntity<?> transactionStatus(@PathVariable String transactionReference) {
-        return null;
+    public ResponseEntity<ApiResponse> transactionStatus(@PathVariable String transactionReference) {
+        return ResponseEntity.ok(transactionService.findTransaction(transactionReference));
     }
 
 
