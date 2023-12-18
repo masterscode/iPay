@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -20,11 +18,6 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction saveTransaction(Transaction t){
         return transactionRepository.save(t);
-    }
-
-    @Override
-    public boolean transactionExists(final String ref){
-        return transactionRepository.existsByTransactionReference(ref);
     }
 
     @Override
