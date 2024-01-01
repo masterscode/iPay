@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-@KafkaListener(topics = "NOTIFICATION")
+@KafkaListener(topics = "TRANSACTION")
 @RequiredArgsConstructor
 public class TransactionProcessor {
     private final Map<String, CoreBankingProvider> coreBankingProvider;
